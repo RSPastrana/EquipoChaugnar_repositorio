@@ -1,2 +1,5 @@
-# EquipoChaugnar_repositorio
-Repositorio de prácticas del curso de Lenguajes de Programación de Rafael Sánchez y Camila Hernández
+# Equipo Chaugnar
+
+Integrantes:
+1. Camila Hernández Huchin
+2. Rafael Sánchez Pastrana
