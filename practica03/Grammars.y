@@ -60,6 +60,15 @@ ASA : nat                           { Num $1 }
 --   * let multiparametrico con una o mas asociaciones;
 --   * let* con una o mas asociaciones;
 --   * los no terminales Bindings y Binding.
+    | var                            { Id $1 }
+    | '(' "let" Binding ASA ')'         { Let $3 $4 }
+    | '(' "let*" Binding ASA ')'        { LetStar $3 $4 }    
+
+Blindings : Binding                       { [$1] }
+          | Binding Bindings               { $1 : $2 }  
+          | '(' Binding Bindings ')'       { $2 : $3 }
+
+Binding : '(' var ASA ')'                 { ($2, $3) }
 
 Args : ASA ASA                       { [$1, $2] }
      | ASA Args                      { $1 : $2 }
