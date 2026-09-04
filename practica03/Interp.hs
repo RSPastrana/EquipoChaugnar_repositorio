@@ -57,11 +57,13 @@ names (Let bs body) =
 names (LetStar bs body) =
   map fst bs ++ concatMap (names . snd) bs ++ names body
 
+--se filtra la lista de nombres para obtener un nombre nuevo, candidates es una lista infinita de nombres posibles, x1, x2, x3, ... y head filtra el primer elemento que no este en la lista xs
 freshName :: [String] -> String
-freshName _ = error "freshName: no completado"
+freshName xs = head $ filter (`notElem` xs) candidates
+  where
+    candidates = [ "x" ++ show n | n <- [1 ..] ]
 
 sust :: ASA -> String -> ASA -> ASA
-sust _ = error "sust: no completado"
 
 sustMany :: ASA -> [Binding] -> ASA
 sustMany _ = error "sustMany: no completado"
