@@ -28,23 +28,25 @@ type Env = [(Nombre, Value)]
 curryFun :: [Nombre] -> ASA -> Maybe ASA
 curryFun [] _ = Nothing
 curryFun [x] e = Just (Fun x e)
-curryFun (x:xs) e = do
-  e' <- curryFun xs e
-  return (Fun x e')
+curryFun (x:xs) e
+  | x `elem` xs = Nothing
+  | otherwise = do
+      e' <- curryFun xs e
+      return (Fun x e')
 
 -- Convierte una aplicacion con uno o mas argumentos en aplicaciones unarias
 -- asociadas por la izquierda.
 curryApp :: ASA -> [ASA] -> Maybe ASA
 curryApp _ [] = Nothing
 curryApp f [e] = Just (App f e)
-curryApp f (e:es) = do
-  e' <- curryApp f es
-  return (App e' e)
+curryApp f es = Just (foldl App f es)
 
 -- Convierte dos o mas operandos en operaciones binarias asociadas por la
 -- izquierda. El constructor recibido sera Add o Sub.
 binaryOp :: (ASA -> ASA -> ASA) -> [ASA] -> Maybe ASA
-binaryOp _ _ = undefined
+binaryOp _ [] = Nothing
+binaryOp _ [e] = Nothing
+binaryOp op (e1:e2:es) = Just (foldl op (op e1 e2) es)
 
 -- Convierte las ligaduras de let* en let anidados y despues elimina cada let
 -- mediante LetS x e1 e2 ==> App (Fun x e2') e1'. La primera ligadura debe
