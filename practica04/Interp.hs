@@ -26,24 +26,37 @@ type Env = [(Nombre, Value)]
 -- Convierte una lista no vacia de parametros distintos en funciones
 -- unarias anidadas. El primer parametro queda en la funcion exterior.
 curryFun :: [Nombre] -> ASA -> Maybe ASA
+curryFun [] _ = Nothing
+curryFun [x] e = Just (Fun x e)
+curryFun (x:xs) e = do
+  e' <- curryFun xs e
+  return (Fun x e')
 
 -- Convierte una aplicacion con uno o mas argumentos en aplicaciones unarias
 -- asociadas por la izquierda.
 curryApp :: ASA -> [ASA] -> Maybe ASA
+curryApp _ [] = Nothing
+curryApp f [e] = Just (App f e)
+curryApp f (e:es) = do
+  e' <- curryApp f es
+  return (App e' e)
 
 -- Convierte dos o mas operandos en operaciones binarias asociadas por la
 -- izquierda. El constructor recibido sera Add o Sub.
 binaryOp :: (ASA -> ASA -> ASA) -> [ASA] -> Maybe ASA
+binaryOp _ _ = undefined
 
 -- Convierte las ligaduras de let* en let anidados y despues elimina cada let
 -- mediante LetS x e1 e2 ==> App (Fun x e2') e1'. La primera ligadura debe
 -- quedar en el let exterior para que las siguientes puedan usarla.
 desugar :: SASA -> Maybe ASA
+desugar _ = undefined
 
 -- RETO 2: evaluacion con cerraduras ---------------------------------------
 
 -- Busca la asociacion mas reciente de un identificador.
 lookupEnv :: Nombre -> Env -> Maybe Value
+lookupEnv _ _ = undefined
 
 -- Evalua con alcance estatico. Fun produce una cerradura con el ambiente
 -- actual. App evalua primero la posicion de funcion, despues el argumento y
@@ -52,3 +65,4 @@ lookupEnv :: Nombre -> Env -> Maybe Value
 -- Conserva la resta truncada y la convencion de que todo numero cuenta como
 -- verdadero cuando aparece como operando de Not.
 bigStep :: Env -> ASA -> Maybe Value
+bigStep _ _ = undefined
