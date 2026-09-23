@@ -52,7 +52,34 @@ binaryOp op (e1:e2:es) = Just (foldl op (op e1 e2) es)
 -- mediante LetS x e1 e2 ==> App (Fun x e2') e1'. La primera ligadura debe
 -- quedar en el let exterior para que las siguientes puedan usarla.
 desugar :: SASA -> Maybe ASA
-desugar _ = undefined
+desugar (NumS n) = Just (Num n)
+desugar (BooleanS b) = Just (Boolean b)
+desugar (IdS x) = Just (Id x)
+desugar (AddS es) = do
+  es' <- mapM desugar es
+  binaryOp Add es'
+desugar (SubS es) = do
+  es' <- mapM desugar es
+  binaryOp Sub es'
+desugar (NotS e) = do
+  e' <- desugar e
+  return (Not e')
+desugar (FunS xs e) = do
+  e' <- desugar e
+  curryFun xs e'
+desugar (AppS f es) = do
+  f' <- desugar f
+  es' <- mapM desugar es
+  curryApp f' es'
+desugar (LetS x e1 e2) = do
+  e1' <- desugar e1
+  e2' <- desugar e2
+  return (App (Fun x e2') e1')
+desugar (LetStarS [] e) = desugar e
+desugar (LetStarS ((x, e1):xs) e2) = do
+  e1' <- desugar e1
+  e2' <- desugar (LetStarS xs e2)
+  return (App (Fun x e2') e1')
 
 -- RETO 2: evaluacion con cerraduras ---------------------------------------
 
