@@ -56,7 +56,11 @@ desugar _ = undefined
 
 -- Busca la asociacion mas reciente de un identificador.
 lookupEnv :: Nombre -> Env -> Maybe Value
-lookupEnv _ _ = undefined
+lookupEnv x [] = Nothing
+lookupEnv x ((y, v):ys)
+  | x == y = Just v
+  | otherwise = lookupEnv x ys
+
 
 -- Evalua con alcance estatico. Fun produce una cerradura con el ambiente
 -- actual. App evalua primero la posicion de funcion, despues el argumento y
