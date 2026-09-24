@@ -98,4 +98,35 @@ lookupEnv x ((y, v):ys)
 -- Conserva la resta truncada y la convencion de que todo numero cuenta como
 -- verdadero cuando aparece como operando de Not.
 bigStep :: Env -> ASA -> Maybe Value
-bigStep _ _ = undefined
+bigStep env e = case e of
+  Id y -> lookupEnv y env
+  Num a -> Just (NumV a)
+  Boolean b -> Just (BooleanV b)
+  Add e1 e2 -> do
+    v1 <- bigStep env e1  
+    v2 <- bigStep env e2
+    case (v1, v2) of
+      (NumV n1, NumV n2) -> Just (NumV (n1 + n2))
+      _ -> Nothing
+  Sub e1 e2 -> do
+    v1 <- bigStep env e1
+    v2 <- bigStep env e2
+    case (v1, v2) of
+      (NumV n1, NumV n2) -> Just (NumV (max 0 (n1 - n2)))
+      _ -> Nothing
+  Not e1 -> do
+    v1 <- bigStep env e1
+    case v1 of
+      BooleanV b -> Just (BooleanV (not b))
+      --todo numero cuenta como verdadero cuando aparece como operando de Not.
+      NumV n -> Just (BooleanV False)
+      _ -> Nothing
+  Fun y e1 -> Just (ClosureV y e1 env)  
+  App ef ea -> do
+    v1 <- bigStep env ef
+    case v1 of
+      ClosureV y body envC -> do
+        v2 <- bigStep env ea
+        bigStep ((y, v2) : envC) body
+      _ -> Nothing
+          
