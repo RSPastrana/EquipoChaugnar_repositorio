@@ -30,9 +30,7 @@ curryFun [] _ = Nothing
 curryFun [x] e = Just (Fun x e)
 curryFun (x:xs) e
   | x `elem` xs = Nothing
-  | otherwise = do
-      e' <- curryFun xs e
-      return (Fun x e')
+  | otherwise =let f = Fun x e in Just (foldl Fun f xs)
 
 -- Convierte una aplicacion con uno o mas argumentos en aplicaciones unarias
 -- asociadas por la izquierda.
