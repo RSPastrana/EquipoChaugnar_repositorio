@@ -5,7 +5,6 @@ import Grammars
 import Interp
 import Lexer
 import System.Console.Haskeline (InputT, defaultSettings, getInputLine, runInputT)
-import Test.QuickCheck 
 
 -- RETO 5: integrar el combinador Y ----------------------------------------
 
@@ -15,10 +14,11 @@ import Test.QuickCheck
 --       (lambda x. f (x x))
 --       (lambda x. f (x x))
 combinadorY :: ASA
-combinadorY = 
+combinadorY =
   Fun "f" (
-    App 
-    (Fun "x" (App (Id "f") (App (Id "x") (Id "x")))) (Fun "x" (App (Id "f") (App (Id "x") (Id "x"))))
+    App
+      (Fun "x" (App (Id "f") (App (Id "x") (Id "x"))))
+      (Fun "x" (App (Id "f") (App (Id "x") (Id "x"))))
   )
 
 -- Evalua combinadorY en el ambiente vacio y asocia su valor con el nombre Y.
@@ -28,7 +28,9 @@ prelude = [("Y", ExprV combinadorY [])]
 -- Integra el analisis, el desazucarado y la evaluacion desde prelude.
 -- El resultado final debe pasar por strict antes de devolverse.
 evalua :: String -> Maybe Value
-evalua _ = undefined
+evalua input = 
+  let p =  parse (lexer input)
+  in desugar p >>= \s -> bigStep prelude s >>= strict
 
 -- Infraestructura provista. No forma parte de los retos.
 repl :: IO ()
