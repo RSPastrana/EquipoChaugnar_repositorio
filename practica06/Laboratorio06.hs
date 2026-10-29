@@ -9,10 +9,15 @@ potencia base exponente =
   base * potencia base (exponente - 1)
 
 potenciaCola :: Int -> Int -> Int
-potenciaCola = undefined
+potenciaCola base exponente = potenciaColaAux base exponente 1
+
+potenciaColaAux ::  Int -> Int -> Int -> Int 
+potenciaColaAux _ 0 acc = acc
+potenciaColaAux base exponente acc = potenciaColaAux base (exponente-1) (acc*base)
 
 potenciaCPS :: Int -> Int -> (Int -> r) -> r
-potenciaCPS = undefined
+potenciaCPS _ 0 k = k 1
+potenciaCPS base exponente k = potenciaCPS base (exponente-1) (\r -> k (r*base))
 
 -- 2. Longitud de una lista -------------------------------------------------
 
@@ -38,10 +43,15 @@ reversa [] = []
 reversa (x : xs) = reversa xs ++ [x]
 
 reversaCola :: [a] -> [a]
-reversaCola = undefined
+reversaCola lista = reversaColaAux lista []
+
+reversaColaAux :: [a] -> [a] -> [a]
+reversaColaAux [] acc = acc
+reversaColaAux (x:xs) acc = reversaColaAux xs ([x]++acc)
 
 reversaCPS :: [a] -> ([a] -> r) -> r
-reversaCPS = undefined
+reversaCPS [] k = k []
+reversaCPS (x:xs) k = reversaCPS xs (\r -> k (r++[x]))
 
 -- 4. Concatenacion de una lista de listas ---------------------------------
 
@@ -69,7 +79,15 @@ intercala (x : xs) (y : ys) =
   x : y : intercala xs ys
 
 intercalaCola :: [a] -> [a] -> [a]
-intercalaCola = undefined
+intercalaCola xs ys  = intercalaColaAux xs ys [] 
+
+intercalaColaAux :: [a] -> [a] -> [a] -> [a]
+intercalaColaAux [] ys acc = acc++ys
+intercalaColaAux xs [] acc = acc++xs
+intercalaColaAux (x:xs) (y:ys) acc = intercalaColaAux xs ys (acc++[x]++[y])
+
 
 intercalaCPS :: [a] -> [a] -> ([a] -> r) -> r
-intercalaCPS = undefined
+intercalaCPS [] ys k = k ys
+intercalaCPS xs [] k = k xs
+intercalaCPS (x:xs) (y:ys) k = intercalaCPS xs ys (\r -> k (x:y:r))
